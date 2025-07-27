@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐂 BlockDAG-LiveStocX Prototype - Real BlockDAG</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; background-color: #eef2f7; color: #333; line-height: 1.6; }
+        .container { max-width: 960px; margin: 30px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.1); display: grid; grid-template-columns: 1fr; gap: 30px; }
+        @media (min-width: 768px) {
+            .container { grid-template-columns: 1fr 1fr; }
+            .full-width { grid-column: 1 / -1; }
+        }
+        h1, h2 { color: #2c3e50; margin-top: 0; margin-bottom: 15px; }
+        h1 { text-align: center; color: #0056b3; font-size: 2.5em; margin-bottom: 30px; }
+        h2 { font-size: 1.6em; border-bottom: 2px solid #e0e0e0; padding-bottom: 10px; }
+        .section { background-color: #fcfcfc; padding: 20px; border-radius: 10px; border: 1px solid #e0e0e0; }
+        input[type="text"], input[type="number"], input[type="password"], select {
+            width: calc(100% - 22px); padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 1em;
+        }
+        button {
+            padding: 12px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;
+            font-size: 1em; transition: background-color 0.3s ease, transform 0.2s ease; width: 100%; margin-bottom: 10px;
+        }
+        button:hover { background-color: #218838; transform: translateY(-2px); }
+        button.red { background-color: #dc3545; }
+        button.red:hover { background-color: #c82333; }
+        .message { margin-top: 15px; padding: 12px; border-radius: 5px; font-weight: bold; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+        pre { background-color: #f0f4f7; padding: 15px; border-radius: 8px; overflow-x: auto; white-space: pre-wrap; word-wrap: break-word; font-family: 'Courier New', monospace; font-size: 0.9em; border: 1px dashed #cfd8dc; }
+        .transaction-item { border-bottom: 1px dashed #e0e0e0; padding-bottom: 10px; margin-bottom: 10px; }
+        .transaction-item:last-child { border-bottom: none; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .input-group { margin-bottom: 15px; }
+        .flex-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        .flex-buttons button { flex-grow: 1; }
+        .user-status { background-color: #eaf6ff; border: 1px solid #cce5ff; padding: 10px; border-radius: 8px; margin-bottom: 20px; font-size: 1.1em; text-align: center; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="full-width">
+            <h1>🐂 BlockDAG-LiveStocX: Cattle By-product Tokenization Prototype</h1>
+            <p style="text-align: center; font-size: 1.1em; color: #555;">Invest in the future of sustainable agriculture through tokenized cattle by-products!</p>
+        </div>
+
+        <div class="section full-width">
+            <h2>🔐 Authentication</h2>
+            <div id="loginSection">
+                <div class="input-group">
+                    <label for="userId">User ID:</label>
+                    <input type="text" id="userId" placeholder="e.g., farmer1 or investor1">
+                </div>
+                <div class="input-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Password">
+                </div>
+                <button onclick="login()">Login</button>
+                <div class="flex-buttons">
+                    <button class="info" onclick="document.getElementById('userId').value='farmer1'; document.getElementById('password').value='farmerpass'; login()">Login as Farmer (farmer1)</button>
+                    <button class="info" onclick="document.getElementById('userId').value='investor1'; document.getElementById('password').value='investorpass'; login()">Login as Investor (investor1)</button>
+                </div>
+                <div id="loginMessage" class="message"></div>
+            </div>
+            <div id="userStatusSection" class="hidden user-status">
+                <p>Logged in as: <strong id="loggedInUserId"></strong> (<span id="loggedInUserRole"></span>)</p>
+                <p>Your Simulated Balance: <strong id="loggedInUserBalance"></strong> USD</p>
+                <p>Your BDAG Balance: <strong id="loggedInUserBDAGBalance"></strong> BDAG</p>
+                <p>Your Wallet Address: <strong id="loggedInUserWalletAddress"></strong></p>
+                <button class="red" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <div class="section hidden" id="createTokenSection">
+            <h2>✨ Get Pre-deployed Token Info (Farmer)</h2>
+            <p class="info">
+                Your `LiveStocXToken` smart contract is already deployed. Use this to retrieve its details.
+            </p>
+            <div class="input-group">
+                <label for="createTokenId">Venture Token ID (from contract):</label>
+                <input type="text" id="createTokenId" placeholder="e.g., Milk" disabled>
+            </div>
+            <div class="input-group">
+                <label for="createTotalSupply">Total Supply (from contract):</label>
+                <input type="number" id="createTotalSupply" placeholder="Total Supply" disabled>
+            </div>
+            <div class="input-group">
+                <label for="createPrice">Simulated Price per Token (USD):</label>
+                <input type="number" id="createPrice" placeholder="Price per Token (USD)" disabled>
+            </div>
+            <div class="input-group">
+                <label for="createFarmerId">Farmer ID (auto-filled):</label>
+                <input type="text" id="createFarmerId" disabled>
+            </div>
+            <button onclick="createToken()">Retrieve Token Details (On-Chain Read)</button>
+            <div id="createTokenMessage" class="message"></div>
+        </div>
+
+        <div class="section hidden" id="investTokenSection">
+            <h2>💰 Invest in Tokens</h2>
+            <div class="input-group">
+                <label for="investTokenId">Select Token (will be "Milk"):</label>
+                <select id="investTokenId">
+                    <option value="">Loading tokens...</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label for="investAmount">Amount to buy (in LSX Tokens):</label>
+                <input type="number" id="investAmount" placeholder="Amount to buy" value="1" min="1">
+            </div>
+            <div class="input-group">
+                <label for="investorId">Your Investor ID (auto-filled):</label>
+                <input type="text" id="investorId" disabled>
+            </div>
+            <p class="info">This will initiate an on-chain `transfer` transaction of LSX tokens from the farmer to you. Ensure farmer has enough LSX tokens and BDAG for gas!</p>
+            <button onclick="purchaseToken()">Buy LSX Tokens (On-Chain Transfer)</button>
+            <div id="purchaseTokenMessage" class="message"></div>
+            <h3>Your LSX Token Holdings:</h3>
+            <pre id="investorHoldingsDisplay">Login to view holdings.</pre>
+        </div>
+
+        <div class="section hidden" id="declareProfitSection">
+            <h2>⛔ Profit Distribution (Currently Disabled)</h2>
+            <p class="error">
+                The current smart contract (`LiveStocXToken`) does not have profit declaration or distribution logic.
+                This section is disabled until a new contract with this functionality is deployed.
+            </p>
+            <button disabled>Declare & Distribute Profit (Disabled)</button>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Provenance Tracker (Backend Log of On-Chain Events)</h2>
+            <p class="info">This section lists transactions recorded by our backend based on on-chain calls. For official on-chain events and logs, refer to the BlockDAG testnet explorer.</p>
+            <div class="input-group">
+                <label for="provenanceTokenId">Select Token for History:</label>
+                <select id="provenanceTokenId" onchange="getTokenProvenance()">
+                    <option value="">Select Token</option>
+                </select>
+            </div>
+            <button onclick="getTokenProvenance()">Refresh Provenance</button>
+            <div id="provenanceLog">
+                <p>Select a token above to view its history.</p>
+            </div>
+        </div>
+
+        <div class="section full-width">
+            <h2>📊 Backend Transaction Log (Simulated Global View)</h2>
+            <p class="info">This log shows all actions processed by our backend, including those resulting from on-chain interactions.</p>
+            <div class="flex-buttons">
+                <button onclick="getTransactions()">Refresh All Backend Transactions</button>
+                <button class="red" onclick="clearFrontendState()">Clear Frontend Log (Backend data persists)</button>
+            </div>
+            <div id="transactionLog">
+                <p>No transactions yet. Create a token or perform an action.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:5000';
+
+        let currentUser = {
+            loggedIn: false,
+            userId: null,
+            role: null,
+            publicAddress: null,
+            balance: 0, // Simulated USD balance
+            nativeBdagBalance: 0 // Real BDAG balance
+        };
+
+        // Utility to fetch data from the API
+        async function fetchData(url, options = {}) {
+            options.credentials = 'include';
+            try {
+                const response = await fetch(url, options);
+                const data = await response.json();
+
+                if (response.status === 401) {
+                    displayMessage(document.getElementById('loginMessage'), data.message || 'Session expired. Please log in again.', 'error');
+                    logoutFrontend();
+                    return { error: data.message || 'Unauthorized' };
+                }
+                if (response.status === 403) {
+                    displayMessage(document.getElementById('loginMessage'), data.message || 'Access denied for your role.', 'error');
+                    return { error: data.message || 'Forbidden' };
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                }
+                return data;
+            } catch (error) {
+                console.error("Fetch error:", error);
+                return { error: error.message };
+            }
+        }
+
+        function displayMessage(element, message, type) {
+            element.className = `message ${type}`;
+            element.innerHTML = message;
+            setTimeout(() => {
+                element.textContent = '';
+                element.className = 'message';
+            }, 5000);
+        }
+
+        async function login() {
+            const userId = document.getElementById('userId').value.trim();
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('loginMessage');
+
+            if (!userId || !password) {
+                displayMessage(messageDiv, 'Please enter User ID and Password.', 'error');
+                return;
+            }
+
+            const data = { user_id: userId, password: password };
+            const result = await fetchData(`${API_BASE_URL}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (result.error) {
+                displayMessage(messageDiv, `Login failed: ${result.error}`, 'error');
+            } else {
+                currentUser = {
+                    loggedIn: true,
+                    userId: result.user_id,
+                    role: result.role,
+                    publicAddress: result.public_address,
+                    balance: result.balance,
+                    nativeBdagBalance: result.native_bdag_balance
+                };
+                updateUIForUserStatus();
+                displayMessage(messageDiv, `Logged in as ${currentUser.userId} (${currentUser.role})!`, 'success');
+                await populateTokenSelects();
+                await getTransactions();
+                await displayInvestorHoldings(currentUser.userId);
+            }
+        }
+
+        async function logout() {
+            const result = await fetchData(`${API_BASE_URL}/logout`, { method: 'POST' });
+            if (result.error) {
+                console.error("Logout failed:", result.error);
+                displayMessage(document.getElementById('loginMessage'), `Logout failed: ${result.error}`, 'error');
+            } else {
+                logoutFrontend();
+                displayMessage(document.getElementById('loginMessage'), result.message, 'info');
+            }
+        }
+
+        function logoutFrontend() {
+            currentUser = {
+                loggedIn: false,
+                userId: null,
+                role: null,
+                publicAddress: null,
+                balance: 0,
+                nativeBdagBalance: 0
+            };
+            updateUIForUserStatus();
+            document.getElementById('investorHoldingsDisplay').textContent = 'Login to view holdings.';
+            document.getElementById('loggedInUserBDAGBalance').textContent = 'N/A';
+            document.getElementById('loggedInUserWalletAddress').textContent = 'N/A';
+            document.getElementById('userId').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        async function updateUIForUserStatus() {
+            const loginSection = document.getElementById('loginSection');
+            const userStatusSection = document.getElementById('userStatusSection');
+            const createTokenSection = document.getElementById('createTokenSection');
+            const investTokenSection = document.getElementById('investTokenSection');
+            const declareProfitSection = document.getElementById('declareProfitSection');
+
+            if (currentUser.loggedIn) {
+                loginSection.classList.add('hidden');
+                userStatusSection.classList.remove('hidden');
+                document.getElementById('loggedInUserId').textContent = currentUser.userId;
+                document.getElementById('loggedInUserRole').textContent = currentUser.role;
+                document.getElementById('loggedInUserBalance').textContent = currentUser.balance.toFixed(2);
+                document.getElementById('loggedInUserBDAGBalance').textContent = currentUser.nativeBdagBalance.toFixed(4);
+                document.getElementById('loggedInUserWalletAddress').textContent = currentUser.publicAddress || 'N/A';
+
+
+                document.getElementById('createFarmerId').value = currentUser.userId;
+                document.getElementById('investorId').value = currentUser.userId;
+                document.getElementById('declareProfitFarmerId').value = currentUser.userId;
+                
+                document.getElementById('createFarmerId').disabled = true;
+                document.getElementById('investorId').disabled = true;
+                document.getElementById('declareProfitFarmerId').disabled = true;
+
+                if (currentUser.role === 'farmer') {
+                    createTokenSection.classList.remove('hidden');
+                    declareProfitSection.classList.add('hidden'); // DISABLED for now
+                    investTokenSection.classList.add('hidden');
+                } else if (currentUser.role === 'investor') {
+                    createTokenSection.classList.add('hidden');
+                    declareProfitSection.classList.add('hidden');
+                    investTokenSection.classList.remove('hidden');
+                }
+            } else {
+                loginSection.classList.remove('hidden');
+                userStatusSection.classList.add('hidden');
+                createTokenSection.classList.add('hidden');
+                investTokenSection.classList.add('hidden');
+                declareProfitSection.classList.add('hidden');
+
+                document.getElementById('createFarmerId').disabled = false;
+                document.getElementById('investorId').disabled = false;
+                document.getElementById('declareProfitFarmerId').disabled = false;
+            }
+        }
+
+        async function checkUserStatusOnLoad() {
+            const result = await fetchData(`${API_BASE_URL}/get_user_status`);
+            if (result.error) {
+                console.error("Failed to get user status:", result.error);
+                logoutFrontend();
+                return;
+            }
+
+            if (result.logged_in) {
+                currentUser = {
+                    loggedIn: true,
+                    userId: result.user_id,
+                    role: result.role,
+                    publicAddress: result.public_address,
+                    balance: result.balance,
+                    nativeBdagBalance: result.native_bdag_balance
+                };
+            } else {
+                logoutFrontend();
+            }
+            updateUIForUserStatus();
+        }
+
+        // --- Create Token (Now gets pre-deployed token info) ---
+        async function createToken() {
+            const messageDiv = document.getElementById('createTokenMessage');
+            if (!currentUser.loggedIn || currentUser.role !== 'farmer') {
+                displayMessage(messageDiv, 'Error: You must be logged in as a farmer to retrieve token details.', 'error');
+                return;
+            }
+
+            displayMessage(messageDiv, 'Retrieving pre-deployed token details from BlockDAG...', 'info');
+            const result = await fetchData(`${API_BASE_URL}/create_token`, {
+                method: 'POST', // Still POST to trigger backend logic
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({}) // No specific data needed for this simplified "creation"
+            });
+
+            if (result.error) {
+                displayMessage(messageDiv, `Error: ${result.error}`, 'error');
+            } else {
+                displayMessage(messageDiv, result.message, 'success');
+                const token = result.token;
+                document.getElementById('createTokenId').value = token.venture_token_id;
+                document.getElementById('createTotalSupply').value = parseFloat(token.total_supply);
+                document.getElementById('createPrice').value = parseFloat(token.price_per_token);
+                
+                await populateTokenSelects();
+                await getTransactions();
+                document.getElementById('provenanceTokenId').value = token.venture_token_id;
+                await getTokenProvenance();
+                await displayInvestorHoldings(currentUser.userId);
+            }
+        }
+
+        // --- Populate Token Dropdowns ---
+        async function populateTokenSelects() {
+            const tokenSelects = [
+                document.getElementById('investTokenId'),
+                document.getElementById('declareProfitTokenId'), // Still here but section disabled
+                document.getElementById('provenanceTokenId')
+            ];
+
+            const result = await fetchData(`${API_BASE_URL}/get_tokens`);
+            if (result.error) {
+                console.error("Failed to fetch tokens:", result.error);
+                tokenSelects.forEach(select => select.innerHTML = '<option value="">Error loading tokens</option>');
+                return;
+            }
+
+            tokenSelects.forEach(select => {
+                const currentSelected = select.value;
+                select.innerHTML = '<option value="">Select Token</option>';
+                const tokensData = result.tokens || {};
+                for (const tokenId in tokensData) {
+                    const option = document.createElement('option');
+                    option.value = tokenId;
+                    option.textContent = `${tokenId} (Available from farmer: ${tokensData[tokenId].current_available} LSX)`;
+                    select.appendChild(option);
+                }
+                if (currentSelected && tokensData[currentSelected]) {
+                    select.value = currentSelected;
+                } else if (Object.keys(tokensData).length > 0) {
+                    select.value = Object.keys(tokensData)[0];
+                }
+            });
+        }
+
+        // --- Purchase Tokens (On-Chain Interaction) ---
+        async function purchaseToken() {
+            const tokenId = document.getElementById('investTokenId').value;
+            const amount = document.getElementById('investAmount').value;
+            const messageDiv = document.getElementById('purchaseTokenMessage');
+
+            if (!currentUser.loggedIn || currentUser.role !== 'investor') {
+                displayMessage(messageDiv, 'Please login as an Investor to purchase tokens.', 'error');
+                return;
+            }
+
+            if (!tokenId || !amount) {
+                displayMessage(messageDiv, 'Please select a token and enter amount.', 'error');
+                return;
+            }
+            if (parseInt(amount) <= 0) {
+                displayMessage(messageDiv, 'Amount to buy must be a positive number.', 'error');
+                return;
+            }
+            if (!currentUser.publicAddress || !currentUser.publicAddress.startsWith('0x')) {
+                displayMessage(messageDiv, 'Your wallet address is not set or valid. Please ensure your BDAG testnet address is configured in backend users data.', 'error');
+                return;
+            }
+
+            const data = {
+                token_id: tokenId,
+                amount: parseInt(amount)
+            };
+
+            displayMessage(messageDiv, 'Initiating on-chain LSX token transfer from farmer. Please wait for transaction confirmation...', 'info');
+            const result = await fetchData(`${API_BASE_URL}/purchase_token`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (result.error) {
+                displayMessage(messageDiv, `Error purchasing tokens: ${result.error}`, 'error');
+            } else {
+                displayMessage(messageDiv, `${result.message} Transaction Hash: <a href="https://primordial.bdagscan.com/tx/${result.tx_hash}" target="_blank">${result.tx_hash.substring(0, 10)}...</a>`, 'success'); // Link to explorer
+                currentUser.balance = result.investor_current_balance;
+                await displayInvestorHoldings(currentUser.userId);
+                await populateTokenSelects();
+                await getTransactions();
+                if (document.getElementById('provenanceTokenId').value === tokenId) {
+                    await getTokenProvenance();
+                }
+            }
+        }
+
+        async function getTransactions() {
+            const transactionLogDiv = document.getElementById('transactionLog');
+            const result = await fetchData(`${API_BASE_URL}/get_transactions`);
+
+            if (result.error) {
+                transactionLogDiv.innerHTML = `<p class="error">Error fetching transactions: ${result.error}</p>`;
+                return;
+            }
+
+            if (result.transactions && result.transactions.length > 0) {
+                const sortedTransactions = result.transactions.sort((a, b) => b.timestamp - a.timestamp);
+                transactionLogDiv.innerHTML = sortedTransactions.map(tx => `
+                    <div class="transaction-item">
+                        <strong>TX ID:</strong> ${tx.tx_id.substring(0, 8)}...<br>
+                        <strong>Type:</strong> ${tx.tx_type}<br>
+                        <strong>Sender:</strong> ${tx.sender_id} (Signed by: ${tx.signature ? tx.signature.substring(0, 8) + '...' : 'N/A'})<br>
+                        <strong>Timestamp:</strong> ${new Date(tx.timestamp * 1000).toLocaleString()}<br>
+                        <strong>Payload:</strong> <pre>${JSON.stringify(tx.payload, null, 2)}</pre>
+                    </div>
+                `).join('');
+            } else {
+                transactionLogDiv.innerHTML = '<p>No transactions recorded yet.</p>';
+            }
+        }
+
+        async function getTokenProvenance() {
+            const tokenId = document.getElementById('provenanceTokenId').value;
+            const provenanceLogDiv = document.getElementById('provenanceLog');
+
+            if (!tokenId) {
+                provenanceLogDiv.innerHTML = '<p>Select a token above to view its history.</p>';
+                return;
+            }
+
+            const result = await fetchData(`${API_BASE_URL}/get_token_provenance/${tokenId}`);
+
+            if (result.error) {
+                provenanceLogDiv.innerHTML = `<p class="error">Error fetching provenance: ${result.error}</p>`;
+                return;
+            }
+
+            if (result.provenance && result.provenance.length > 0) {
+                const sortedProvenance = result.provenance.sort((a, b) => a.timestamp - b.timestamp);
+                provenanceLogDiv.innerHTML = `<h3>History for ${tokenId}:</h3>` + sortedProvenance.map(tx => `
+                    <div class="transaction-item">
+                        <strong>TX ID:</strong> ${tx.tx_id.substring(0, 8)}...<br>
+                        <strong>Type:</strong> ${tx.tx_type}<br>
+                        <strong>Sender:</strong> ${tx.sender_id} (Signed by: ${tx.signature ? tx.signature.substring(0, 8) + '...' : 'N/A'})<br>
+                        <strong>Timestamp:</strong> ${new Date(tx.timestamp * 1000).toLocaleString()}<br>
+                        <strong>Payload:</strong> <pre>${JSON.stringify(tx.payload, null, 2)}</pre>
+                    </div>
+                `).join('');
+            } else {
+                provenanceLogDiv.innerHTML = `<p>No history found for ${tokenId}.</p>`;
+            }
+        }
+
+        async function displayInvestorHoldings(userId) {
+            const holdingsDisplay = document.getElementById('investorHoldingsDisplay');
+            const loggedInUserBDAGBalance = document.getElementById('loggedInUserBDAGBalance');
+            const loggedInUserWalletAddress = document.getElementById('loggedInUserWalletAddress');
+
+
+            if (!userId || !currentUser.loggedIn) {
+                holdingsDisplay.textContent = 'Login to view holdings.';
+                loggedInUserBDAGBalance.textContent = 'N/A';
+                loggedInUserWalletAddress.textContent = 'N/A';
+                return;
+            }
+            if (userId !== currentUser.userId) {
+                holdingsDisplay.textContent = 'Holdings only visible for the logged-in user.';
+                return;
+            }
+
+
+            const result = await fetchData(`${API_BASE_URL}/get_holdings/${userId}`);
+            if (result.error) {
+                holdingsDisplay.textContent = `Error: ${result.error}`;
+                loggedInUserBDAGBalance.textContent = 'Error';
+                loggedInUserWalletAddress.textContent = 'Error';
+                return;
+            }
+            holdingsDisplay.textContent = JSON.stringify(result.holdings, null, 2);
+            currentUser.balance = result.balance;
+            currentUser.nativeBdagBalance = result.native_bdag_balance;
+            updateUIForUserStatus();
+
+            loggedInUserBDAGBalance.textContent = result.native_bdag_balance.toFixed(4);
+            loggedInUserWalletAddress.textContent = currentUser.publicAddress;
+
+        }
+
+        function clearFrontendState() {
+            document.getElementById('transactionLog').innerHTML = '<p>No transactions yet. Create a token or perform an action.</p>';
+            document.getElementById('investorHoldingsDisplay').textContent = 'Login to view holdings.';
+            document.getElementById('loggedInUserBDAGBalance').textContent = 'N/A';
+            document.getElementById('loggedInUserWalletAddress').textContent = 'N/A';
+            document.getElementById('provenanceLog').innerHTML = '<p>Select a token above to view its history.</p>';
+            displayMessage(document.getElementById('createTokenMessage'), 'Frontend log cleared (backend data persists).', 'success');
+            displayMessage(document.getElementById('purchaseTokenMessage'), '', '');
+            displayMessage(document.getElementById('profitDistributionMessage'), '', '');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkUserStatusOnLoad();
+            await populateTokenSelects();
+            await getTransactions();
+        });
+    </script>
+</body>
+</html>
